@@ -1,11 +1,48 @@
 import operator
 
 class Expression(object):
+    out_priority = {'+' : 3,
+                    '-' : 3,
+                    '*' : 5,
+                    '/' : 5,
+                    '^' : 8,
+                    '(' : 9,
+                    ')' : 1}
+    in_priority = {'+' : 3,
+                   '-' : 3,
+                   '*' : 5,
+                   '/' : 5,
+                   '^' : 7,
+                   '(' : 0}    
+
+    def __init__(self, infix):
+        self.postfix = Expression.__convert2postfix([ch for ch in infix])
+
+    def eval(self):
+        return Expression.__eval_postfix(self.postfix)
 
     @staticmethod
-    def eval_infix(infix):
+    def __convert2postfix(infix):
+        postfix = []
         stack = []
         for op in infix:
+            if op.isdigit():
+                postfix.append(op)
+            else:
+                while len(stack) > 0 and Expression.in_priority[stack[-1]] >= Expression.out_priority[op]:
+                    postfix.append(stack.pop())
+                if op == ')':
+                    stack.pop()
+                else:
+                    stack.append(op)
+        while len(stack) > 0:
+            postfix.append(stack.pop())
+        return postfix
+            
+    @staticmethod
+    def __eval_postfix(postfix):
+        stack = []
+        for op in postfix:
             if op.isdigit():
                 stack.append(int(op))
             else:
@@ -20,11 +57,12 @@ class Expression(object):
                 '-' : operator.sub,
                 '*' : operator.mul,
                 '/' : operator.div,
-                '%' : operator.mod,
-                '^' : operator.xor}[op]
+                '^' : operator.pow}[op]
 
     @staticmethod
     def __eval_binary_op(op1, op, op2):
         return Expression.__get_operator(op)(op1, op2)
 
-print Expression.eval_infix(['2','3','+','4','-'])
+if __name__ == '__main__':
+    e = Expression('2*(3+4)')
+    assert e.eval() == 14
