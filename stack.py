@@ -18,15 +18,15 @@ class Expression(object):
     def __init__(self, infix):
         self.postfix = Expression.__convert2postfix([ch for ch in infix])
 
-    def eval(self):
-        return Expression.__eval_postfix(self.postfix)
+    def eval(self, num=1):
+        return Expression.__eval_postfix(self.postfix, num)
 
     @staticmethod
     def __convert2postfix(infix):
         postfix = []
         stack = []
         for op in infix:
-            if op.isdigit():
+            if Expression.out_priority.get(op) is None:
                 postfix.append(op)
             else:
                 while len(stack) > 0 and Expression.in_priority[stack[-1]] >= Expression.out_priority[op]:
@@ -40,11 +40,11 @@ class Expression(object):
         return postfix
             
     @staticmethod
-    def __eval_postfix(postfix):
+    def __eval_postfix(postfix, num):
         stack = []
         for op in postfix:
-            if op.isdigit():
-                stack.append(int(op))
+            if Expression.out_priority.get(op) is None:
+                stack.append(int(op) if op.isdigit() else num)
             else:
                 op2 = stack.pop()
                 op1 = stack.pop()
