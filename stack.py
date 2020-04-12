@@ -48,7 +48,7 @@ class Expression(object):
             else:
                 op2 = stack.pop()
                 op1 = stack.pop()
-                stack.append(Expression.__eval_binary_op(op1, op, op2))
+                stack.append(Expression._eval_binary_op(op1, op, op2))
         return stack.pop()
 
     @staticmethod
@@ -60,7 +60,7 @@ class Expression(object):
                 '^' : operator.pow}[op]
 
     @staticmethod
-    def __eval_binary_op(op1, op, op2):
+    def _eval_binary_op(op1, op, op2):
         return Expression.__get_operator(op)(op1, op2)
 
 if __name__ == '__main__':
